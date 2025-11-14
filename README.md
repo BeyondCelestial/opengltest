@@ -10,6 +10,6 @@ Here is some GitHub Markdown formatting:
 *Italic*
 ~~Strike-through aka deprecated~~
 
-Here some basic usage of the library
+Here's some basic usage of the library
 > var usage = someImpressiveLibrary(dependency);
 

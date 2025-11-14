@@ -21,7 +21,7 @@ void main() {
         
     }
 
-    offset =+ offU;
+    offset += offU;
     
     gl_Position = vec4(offset, 0.0, 1.0);
 }

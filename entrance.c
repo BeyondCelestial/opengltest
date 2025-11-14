@@ -12,15 +12,19 @@ float array[6] = {
     0.5f, -0.5f
 };
 
+//VBO and VAO ID variables
 unsigned int buffer;
 unsigned int VAO;
 
+//Fragment and vertex shader pointer variables
 char* frag;
 char* vert;
 
+//Universal Offser variables
 int offsety = 0;
 int offsetx = 0;
 
+//Shader related ID variables
 GLuint shaderProgram;
 GLuint offUloc;
 
@@ -93,6 +97,7 @@ void MainLoad(Display *dpy, Window win) {
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
 
+    
 
     glVertexAttribPointer(
         0,        // location 0
@@ -120,7 +125,9 @@ void MainGameLoop(Display *dpy, Window win) {
         if (event.type == KeyPress) {
             KeySym key = XLookupKeysym(&event.xkey, 0);
 
-            if (key == XK_K) {
+
+
+            if (key == XK_Right) {
                 offsetx += 5;
             }
         } 
@@ -134,11 +141,13 @@ void MainGameLoop(Display *dpy, Window win) {
 
 // ---------------- LoopDraw ----------------
 void LoopDraw(Display *dpy, Window win) {
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT); //clear last image
 
-    glUseProgram(shaderProgram);
-    glUniform2f(offUloc, (float)offsetx/100, (float)offsety/100);
+    glUseProgram(shaderProgram); // use shader program
+    glUniform2f(offUloc, (float)offsetx/100, (float)offsety/100); 
+    // pass in the offU the uniform shader variable
 
+    //binf vertex array and draw, unbind vertex array.
     glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, 3);
     glBindVertexArray(0);

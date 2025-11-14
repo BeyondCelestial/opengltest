@@ -24,6 +24,14 @@ char* vert;
 int offsety = 0;
 int offsetx = 0;
 
+//user input variables
+int movex = 0;
+int movey = 0;
+int speed = 5;
+int left;
+int right;
+int up;
+int down;
 //Shader related ID variables
 GLuint shaderProgram;
 GLuint offUloc;
@@ -31,6 +39,9 @@ GLuint offUloc;
 
 // --- Forward declaration ---
 void LoopDraw(Display *dpy, Window win);
+void HandleUserInput(Display *dpy);
+void UpdateVariables();
+
 
 // ---------------- MainLoad ----------------
 void MainLoad(Display *dpy, Window win) {
@@ -115,23 +126,12 @@ void MainLoad(Display *dpy, Window win) {
     offUloc = glGetUniformLocation(shaderProgram, "offU");
 
 }
-
 // ---------------- MainGameLoop ----------------
 void MainGameLoop(Display *dpy, Window win) {
     // Process events
-    XEvent event;
-    while (XPending(dpy)) {
-        XNextEvent(dpy, &event);
-        if (event.type == KeyPress) {
-            KeySym key = XLookupKeysym(&event.xkey, 0);
-
-
-
-            if (key == XK_Right) {
-                offsetx += 5;
-            }
-        } 
-    }
+    HandleUserInput(dpy);
+    //Update Varibles
+    UpdateVariables();
     // Draw
     LoopDraw(dpy, win);
 
@@ -139,12 +139,13 @@ void MainGameLoop(Display *dpy, Window win) {
     glXSwapBuffers(dpy, win);
 }
 
+
 // ---------------- LoopDraw ----------------
 void LoopDraw(Display *dpy, Window win) {
     glClear(GL_COLOR_BUFFER_BIT); //clear last image
 
     glUseProgram(shaderProgram); // use shader program
-    glUniform2f(offUloc, (float)offsetx/100, (float)offsety/100); 
+    glUniform2f(offUloc, (float)offsetx/200, (float)offsety/200); 
     // pass in the offU the uniform shader variable
 
     //binf vertex array and draw, unbind vertex array.
@@ -152,4 +153,42 @@ void LoopDraw(Display *dpy, Window win) {
     glDrawArrays(GL_TRIANGLES, 0, 3);
     glBindVertexArray(0);
 
+}
+
+void HandleUserInput(Display *dpy) {
+    XEvent event;
+    while (XPending(dpy)) {
+        XNextEvent(dpy, &event);
+        switch (event.type) {
+            case KeyPress: {
+                KeySym key = XLookupKeysym(&event.xkey, 0);
+                if (key == XK_Right) right = 1;
+                if (key == XK_Left)  left  = 1;
+                if (key == XK_Up)    up    = 1;
+                if (key == XK_Down)  down  = 1;
+                break;
+            }
+            case KeyRelease: {
+                KeySym key = XLookupKeysym(&event.xkey, 0);
+                if (key == XK_Right) right = 0;
+                if (key == XK_Left)  left  = 0;
+                if (key == XK_Up)    up    = 0;
+                if (key == XK_Down)  down = 0;
+                break;
+    }
+
+        } 
+    }
+}
+
+void UpdateVariables() {
+    movex = 0;
+    movey = 0;
+    if (right && !left) movex = 1;
+    if (left  && !right) movex = -1;
+    if (up    && !down)  movey = 1;
+    if (down  && !up)    movey = -1;
+
+    offsetx += speed * movex;
+    offsety += speed * movey;
 }

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "entrance.h"
+#include <X11/XKBlib.h>
 
 int main() {
 
@@ -9,6 +10,8 @@ int main() {
         fprintf(stderr, "Could not open display\n");
         return 1;
     }
+    Bool supported;
+    XkbSetDetectableAutoRepeat(dpy, True, &supported);
 
     printf("Connected to X server\n");
 
@@ -29,7 +32,7 @@ int main() {
     Colormap cmap = XCreateColormap(dpy, root, vi->visual, AllocNone);
     XSetWindowAttributes swa;
     swa.colormap = cmap;
-    swa.event_mask = ExposureMask | KeyPressMask;
+    swa.event_mask = ExposureMask | KeyPressMask | KeyReleaseMask;
 
     Window win = XCreateWindow(
         dpy, root,

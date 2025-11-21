@@ -6,10 +6,14 @@
 #include <GL/glx.h>
 #include "file/file.h"
 #include "render/shader.h"
+#include "iocon/input.h"
 
-float array[6] = {
+float array[12] = {
    -0.5f, -0.5f,
-    0.0f,  0.5f,
+   -0.5f,  0.5f,
+    0.5f, -0.5f,
+    0.5f,  0.5f,
+   -0.5f,  0.5f,
     0.5f, -0.5f
 };
 
@@ -29,10 +33,6 @@ int offsetx = 0;
 int movex = 0;
 int movey = 0;
 int speed = 5;
-int left;
-int right;
-int up;
-int down;
 //Shader related ID variables
 GLuint shaderProgram;
 GLuint offUloc;
@@ -40,7 +40,6 @@ GLuint offUloc;
 
 // --- Forward declaration ---
 void LoopDraw(Display *dpy, Window win);
-void HandleUserInput(Display *dpy);
 void UpdateVariables();
 
 
@@ -61,7 +60,7 @@ void MainLoad(Display *dpy, Window win) {
 
     glGenBuffers(1, &buffer);
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    glBufferData(GL_ARRAY_BUFFER, 6*sizeof(float), array, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, 12*sizeof(float), array, GL_STATIC_DRAW);
 
     
     glGenVertexArrays(1, &VAO);
@@ -109,36 +108,11 @@ void LoopDraw(Display *dpy, Window win) {
 
     //binf vertex array and draw, unbind vertex array.
     glBindVertexArray(VAO);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
     glBindVertexArray(0);
 
 }
 
-void HandleUserInput(Display *dpy) {
-    XEvent event;
-    while (XPending(dpy)) {
-        XNextEvent(dpy, &event);
-        switch (event.type) {
-            case KeyPress: {
-                KeySym key = XLookupKeysym(&event.xkey, 0);
-                if (key == XK_Right) right = 1;
-                if (key == XK_Left)  left  = 1;
-                if (key == XK_Up)    up    = 1;
-                if (key == XK_Down)  down  = 1;
-                break;
-            }
-            case KeyRelease: {
-                KeySym key = XLookupKeysym(&event.xkey, 0);
-                if (key == XK_Right) right = 0;
-                if (key == XK_Left)  left  = 0;
-                if (key == XK_Up)    up    = 0;
-                if (key == XK_Down)  down = 0;
-                break;
-    }
-
-        } 
-    }
-}
 
 void UpdateVariables() {
     movex = 0;
